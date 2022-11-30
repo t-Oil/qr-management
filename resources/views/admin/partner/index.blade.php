@@ -5,7 +5,9 @@
 @section('content')
     <div class="container">
         <div class="d-flex justify-content-end py-2">
-            <button class="btn btn-primary"><i class="fa fa-plus-circle" style="color: white;"></i> เพิ่มข้อมูล</button>
+            <button class="btn btn-primary create"><i
+                    class="fa fa-plus-circle" style="color: white;"></i> เพิ่มข้อมูล
+            </button>
         </div>
         <div class="row">
             <div class="col-12">
@@ -106,6 +108,36 @@
         </div>
         @include('admin.inc.footer-table')
     </div>
+
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">เพิ่ม</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        <input type="hidden" id="id">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="code">รหัสคู่ค้า</label>
+                        <input type="text" class="form-control" id="code" placeholder="กรอกรหัสคู่ค้า">
+                        <span class="invalid-feedback" id="err-code"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">ชื่อคู่ค้า</label>
+                        <input type="text" class="form-control" id="name" placeholder="กรอกชื่อคู่ค้า">
+                        <span class="invalid-feedback" id="err-name"></span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-primary" id="submit">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -134,8 +166,78 @@
                 });
             });
 
+            $('.create').click(function () {
+                $('.modal-title').html('เพิ่ม')
+                $('#code').val('')
+                $('#name').val('')
+                $('#id').val('')
+                $('#modal-default').modal('show')
+            });
+
+            $('.edit').click(function () {
+                const id = $(this).attr('data-id');
+
+                $.ajax({
+                    url: '{{$data->preFixUrl}}/' + id,
+                    context: this,
+                    success: function (res) {
+                        const { code, name} = res.data
+
+                        $('.modal-title').html('แก้ไข')
+                        $('#code').val(code)
+                        $('#name').val(name)
+                        $('#id').val(id)
+                        $('#modal-default').modal('show')
+                    },
+                    error: function (xhr, err) {
+                        handleToast()
+                    }
+                });
+            });
+
+            $('#submit').click(function() {
+                $('#submit').prop('disabled', true)
+                $('.invalid-feedback').removeClass('d-block')
+
+                const payload = {
+                    id: $('#id').val(),
+                    code: $('#code').val(),
+                    name: $('#name').val()
+                }
+
+                $.ajax({
+                    url: '{{$data->preFixUrl}}/store',
+                    type: 'post',
+                    data: payload,
+                    context: this,
+                    success: function (res) {
+                        const { message, success } = res
+
+                        if(!success) {
+                            if (message.hasOwnProperty('code')) {
+                                $('#err-code').html(message.code[0])
+                                $('#err-code').addClass('d-block')
+                            }
+
+                            if (message.hasOwnProperty('name')) {
+                                $('#err-name').html(message.name[0])
+                                $('#err-name').addClass('d-block')
+                            }
+
+                            $('#submit').prop('disabled', false)
+                            return
+                        }
+
+                        handleToast('success', 'สำเร็จ')
+                    },
+                    error: function (xhr, err) {
+                        handleToast()
+                    }
+                });
+            })
+
             $('.remove').click(function () {
-                var id = $(this).attr('data-id');
+                const id = $(this).attr('data-id');
                 Swal.fire({
                     title: "แจ้งเตือน",
                     text: "ยืนยันการลบข้อมูล",

@@ -17,10 +17,14 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Auth::routes(['verify' => true]);
-Route::get('/', [App\Http\Controllers\Web\HomeController::class, 'index'])->name('web.index');
 
+Route::get('/', [App\Http\Controllers\Web\HomeController::class, 'index'])->name('web.index');
 
 Route::get('/logout', [
     'App\Http\Controllers\Auth\LogoutController', 'logout'
 ])->name('auth.logout');
+
+Route::get('/register', [
+    'App\Http\Controllers\Auth\RegisterController', 'register'
+])->name('auth.register');
 

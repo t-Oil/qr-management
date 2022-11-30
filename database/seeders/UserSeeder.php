@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'password'  =>  bcrypt('Admin'),
             'email_verified_at' => Carbon::now(),
             'is_admin' => 1
-        ])->assignRole('admin');
+        ]);
 
         User::create([
             'username'      =>  'user',
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             'password'  =>  bcrypt('User'),
             'email_verified_at' => Carbon::now(),
             'is_admin' => 0
-        ])->assignRole('admin');
+        ]);
 
     }
 }

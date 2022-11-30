@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -36,5 +37,31 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $input = $request->all();
+
+        $this->validate($request, [
+            'username' => 'required',
+            'password' => 'required',
+        ], [
+            'username.required' => 'ชื่อผู้ใช้งานต้องไม่เป็นค่าว่าง',
+            'password.required' => 'รหัสผ่านต้องไม่เป็นค่าว่าง'
+        ]);
+
+        if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
+        {
+            if (auth()->user()->is_admin == 1) {
+                return redirect()->route('admin.user.index');
+            }
+
+            return redirect()->route('web.index');
+        }
+
+        return redirect()->back()
+            ->with('error','ชื่อผู้ใช้งานหรือรหัสผ่านผิดพลาด');
+
     }
 }

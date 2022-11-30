@@ -39,8 +39,8 @@
                             <thead>
                             <tr>
                                 <th>ลำดับ</th>
-                                <th>รหัสแผนก</th>
-                                <th>ชื่อแผนก</th>
+                                <th>ชื่อผู้ใช้งาน</th>
+                                <th>คู่ค้า</th>
                                 <th>สถานะ</th>
                                 <th class="text-center">จัดการ</th>
                             </tr>
@@ -50,8 +50,8 @@
                             @forelse ($items as $index => $item)
                                 <tr>
                                     <td>{{ $items->pages->start+$index + 1 }}</td>
-                                    <td>{{ $item->code }}</td>
-                                    <td>{{ $item->name }}</td>
+                                    <td>{{ $item->username }}</td>
+                                    <td>{{ optional($item->partner)->name }}</td>
                                     <td>
                                         <label class="switch switch-green">
                                             <input
@@ -72,15 +72,6 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group  blog-manage" role="group">
-                                            <button
-                                                data-id="{{ $item->id }}"
-                                                type="button"
-                                                class="btn btn-primary edit"
-                                                data-bs-toggle="tooltip"
-                                                title="แก้ไข"
-                                            >
-                                                <i class="fa fa-fw fa-pencil-alt"></i>
-                                            </button>
                                             <button
                                                 data-id="{{ $item->id }}"
                                                 type="button"
@@ -121,14 +112,29 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="code">รหัสสินค้า</label>
-                        <input type="text" class="form-control" id="code" placeholder="กรอกรหัสสินค้า">
-                        <span class="invalid-feedback" id="err-code"></span>
+                        <label for="username">ชื่อผู้ใช้งาน</label>
+                        <input type="text" class="form-control" id="username" placeholder="กรอกชื่อผู้ใช้งาน">
+                        <span class="invalid-feedback" id="err-username"></span>
                     </div>
                     <div class="form-group">
-                        <label for="name">ชื่อสินค้า</label>
-                        <input type="text" class="form-control" id="name" placeholder="กรอกชื่อสินค้า">
-                        <span class="invalid-feedback" id="err-name"></span>
+                        <label for="password">รหัสผ่าน</label>
+                        <input type="password" class="form-control" id="password" placeholder="กรอกรหัสผ่าน">
+                        <span class="invalid-feedback" id="err-password"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirmation">ยืนยันรหัสผ่าน</label>
+                        <input type="password" class="form-control" id="password_confirmation" placeholder="กรอกยืนยันรหัสผ่าน">
+                        <span class="invalid-feedback" id="err-password_confirmation"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="partner">คู่ค้า</label>
+                        <select class="form-control" id="partner">
+                            <option value="">กรุณาเลือกคู่ค้า</option>
+                            @foreach($partners as $partner)
+                                <option value="{{$partner->id}}">{{ $partner->name }}</option>
+                            @endforeach
+                        </select>
+                        <span class="invalid-feedback" id="err-partner"></span>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -201,8 +207,10 @@
 
                 const payload = {
                     id: $('#id').val(),
-                    code: $('#code').val(),
-                    name: $('#name').val()
+                    username: $('#username').val(),
+                    password: $('#password').val(),
+                    password_confirmation: $('#password_confirmation').val(),
+                    partner: $('#partner').val()
                 }
 
                 $.ajax({
@@ -214,14 +222,24 @@
                         const { message, success } = res
 
                         if(!success) {
-                            if (message.hasOwnProperty('code')) {
-                                $('#err-code').html(message.code[0])
-                                $('#err-code').addClass('d-block')
+                            if (message.hasOwnProperty('username')) {
+                                $('#err-username').html(message.username[0])
+                                $('#err-username').addClass('d-block')
                             }
 
-                            if (message.hasOwnProperty('name')) {
-                                $('#err-name').html(message.name[0])
-                                $('#err-name').addClass('d-block')
+                            if (message.hasOwnProperty('password')) {
+                                $('#err-password').html(message.password[0])
+                                $('#err-password').addClass('d-block')
+                            }
+
+                            if (message.hasOwnProperty('password_confirmation')) {
+                                $('#err-password_confirmation').html(message.password_confirmation[0])
+                                $('#err-password_confirmation').addClass('d-block')
+                            }
+
+                            if (message.hasOwnProperty('partner')) {
+                                $('#err-partner').html(message.partner[0])
+                                $('#err-partner').addClass('d-block')
                             }
 
                             $('#submit').prop('disabled', false)

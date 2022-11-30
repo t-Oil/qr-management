@@ -17,7 +17,7 @@ class CreatePartnersTable extends Migration
             $table->id();
             $table->string('code');
             $table->string('name');
-            $table->smallInteger('is_active');
+            $table->smallInteger('is_active')->default(1)->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Department;
+use App\Models\Partner;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class DepartmentController extends Controller
+class UserController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -19,8 +22,8 @@ class DepartmentController extends Controller
     public function __construct()
     {
         $this->module = new \stdClass();
-        $this->module->contentHeader = 'ข้อมูลแผนก';
-        $this->module->preFixUrl = 'departments';
+        $this->module->contentHeader = 'ข้อมูลผู้ใช้งาน';
+        $this->module->preFixUrl = 'users';
 
         $this->data['data'] = $this->module;
     }
@@ -36,7 +39,9 @@ class DepartmentController extends Controller
         $this->items->pages->start = ($this->items->perPage() * $this->items->currentPage()) - $this->items->perPage();
         $this->data['items'] = $this->items;
 
-        return view('admin.department.index', $this->data);
+        $this->data['partners'] = Partner::query()->where('is_active', 1)->get();
+
+        return view('admin.user.index', $this->data);
     }
 
     /**
@@ -47,11 +52,10 @@ class DepartmentController extends Controller
     {
         $search = Arr::get($parameters, 'search');
         $paginate = Arr::get($parameters, 'total', config('project.limit_rows'));
-        $query = new Department;
+        $query = new User;
 
         if ($search) {
-            $query = $query->where('code', 'LIKE', '%' . $search . '%')
-                ->orWhere('name', 'LIKE', '%' . $search . '%');
+            $query = $query->where('username', 'LIKE', '%' . $search . '%');
         }
 
         return $query->paginate($paginate);
@@ -63,7 +67,7 @@ class DepartmentController extends Controller
      */
     public function show(int $id)
     {
-        $data = Department::query()->select(['code', 'name'])->find($id);
+        $data = User::query()->select(['username', 'partner_id'])->find($id);
 
         return response()->json(array(
             'data' => $data,
@@ -73,10 +77,10 @@ class DepartmentController extends Controller
 
     /**
      * @param Request $request
-     * @param Department $data
+     * @param User $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateStatus(Request $request, Department $data)
+    public function updateStatus(Request $request, User $data)
     {
         $id = Arr::get($request->all(), 'id');
         $typeField = Arr::get($request->all(), 'typeField');
@@ -108,7 +112,7 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         try {
-            $data = Department::query()->find($id);
+            $data = User::query()->find($id);
 
             if ($data) {
                 $data->delete();
@@ -136,12 +140,22 @@ class DepartmentController extends Controller
         $id = Arr::get($parameters, 'id');
 
         $validator = Validator::make($parameters, [
-            'code' => 'required|unique:departments,code,' . $id,
-            'name' => 'required'
+            'username' => 'required|unique:users,username,' . $id,
+            'password' => [
+                'required',
+                'confirmed',
+                'min:6'
+            ],
+            'password_confirmation' => 'required',
+            'partner' => 'required'
         ], [
-            'name.required' => 'ชื่อแผนกไม่ควรเป็นค่าว่าง',
-            'code.required' => 'รหัสแผนกไม่ควรเป็นค่าว่าง',
-            'code.unique' => 'รหัสแผนกซ้ำ',
+            'password.required' => 'รหัสผ่านไม่ควรเป็นค่าว่าง',
+            'password.confirmed' => 'รหัสผ่านและยืนยันรหัสผ่านต้องตรงกัน',
+            'password.min' => 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+            'password_confirmation.required' => 'ยืนยันรหัสผ่านไม่ควรเป็นค่าว่าง',
+            'partner.required' => 'คู่ค้าไม่ควรเป็นค่าว่าง',
+            'username.required' => 'ชื่อผู้ใช้งานไม่ควรเป็นค่าว่าง',
+            'username.unique' => 'ชื่อผู้ใช้งานซ้ำ',
         ]);
 
         if ($validator->fails()) {
@@ -152,7 +166,7 @@ class DepartmentController extends Controller
         }
 
         if (!empty($id)) {
-            $data = Department::query()->find($id);
+            $data = User::query()->find($id);
 
             if (!$data) {
                 return response()->json(array(
@@ -165,15 +179,17 @@ class DepartmentController extends Controller
         try {
             DB::beginTransaction();
 
-            Department::updateOrCreate([
-                'id' => $id
-            ], [
-                'code' => Arr::get($parameters, 'code'),
-                'name' => Arr::get($parameters, 'name')
-            ]);
+            $data = [
+                'email' => Arr::get($parameters, 'username'),
+                'username' => Arr::get($parameters, 'username'),
+                'password' => Hash::make(Arr::get($parameters, 'password')),
+                'partner_id' => Arr::get($parameters, 'partner'),
+                'email_verified_at' => Carbon::now()
+            ];
+
+            User::create($data);
 
             DB::commit();
-
         } catch (\Throwable $e) {
             DB::rollback();
 

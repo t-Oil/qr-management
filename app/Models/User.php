@@ -22,6 +22,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
+        'username',
+        'partner_id'
     ];
 
     /**
@@ -63,5 +65,14 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * @return array|\ArrayAccess|mixed
+     */
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class, 'partner_id', 'id')
+            ->select('name');
     }
 }

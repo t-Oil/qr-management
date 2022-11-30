@@ -16,6 +16,14 @@
 @section('classes_body'){{ ($auth_type ?? 'login') . '-page' }}@stop
 
 @section('body')
+    <nav class="navbar navbar-expand-md navbar-light shadow-sm position-absolute w-100 bg-dark-primary" style="top: 0">
+        <div class="container">
+            <a class="navbar-brand text-white" href="{{ url('/') }}">
+                {{ config('app.name', 'Laravel') }}
+            </a>
+        </div>
+    </nav>
+
     <div class="{{ $auth_type ?? 'login' }}-box">
 
         {{-- Logo --}}
