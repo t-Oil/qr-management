@@ -18,7 +18,24 @@ use Illuminate\Support\Facades\Auth;
 
 Auth::routes(['verify' => true]);
 
-Route::get('/', [App\Http\Controllers\Web\HomeController::class, 'index'])->name('web.index');
+Route::group(
+    [
+        'namespace' => 'App\Http\Controllers\Web',
+    ],
+    function () {
+        Route::get('/', [
+            'uses' => 'HomeController@index'
+        ])->name('web.index');
+
+        Route::get('/task', [
+            'uses' => 'TaskController@index'
+        ])->name('task.index');
+
+        Route::post('/task/store', [
+            'uses' => 'TaskController@store'
+        ])->name('task.store');
+    }
+);
 
 Route::get('/logout', [
     'App\Http\Controllers\Auth\LogoutController', 'logout'

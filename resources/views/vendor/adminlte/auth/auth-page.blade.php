@@ -18,6 +18,12 @@
 @section('body')
     <nav class="navbar navbar-expand-md navbar-light shadow-sm position-absolute w-100 bg-dark-primary" style="top: 0">
         <div class="container">
+            {{-- Sidebar brand logo --}}
+            @if(config('adminlte.logo_img_xl'))
+                @include('adminlte::partials.common.brand-logo-xl')
+            @else
+                @include('adminlte::partials.common.brand-logo-xs')
+            @endif
             <a class="navbar-brand text-white" href="{{ url('/') }}">
                 {{ config('app.name', 'Laravel') }}
             </a>

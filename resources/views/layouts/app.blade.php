@@ -20,6 +20,7 @@
     @if(!config('adminlte.enabled_laravel_mix'))
         <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
         <link rel="stylesheet" href="{{ asset('vendor/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 
         {{-- Configured Stylesheets --}}
         @include('adminlte::plugins', ['type' => 'css'])
@@ -40,9 +41,12 @@
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-light bg-dark-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand text-white" href="{{ url('/') }}">
-                {{ config('app.name', 'Laravel') }}
-            </a>
+            {{-- Sidebar brand logo --}}
+            @if(config('adminlte.logo_img_xl'))
+                @include('adminlte::partials.common.brand-logo-xl')
+            @else
+                @include('adminlte::partials.common.brand-logo-xs')
+            @endif
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="{{ __('Toggle navigation') }}">
@@ -98,4 +102,28 @@
     </main>
 </div>
 </body>
+{{-- Base Scripts --}}
+@if(!config('adminlte.enabled_laravel_mix'))
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+{{--    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>--}}
+    <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+
+    {{-- SweetAlert2 --}}
+    <script src="{{ asset('vendor/sweetalert2/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('js/toast.js') }}"></script>
+
+    {{-- moment --}}
+    <script src="{{ asset('vendor/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+
+    {{-- Configured Scripts --}}
+    @include('adminlte::plugins', ['type' => 'js'])
+
+    <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+@else
+    <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
+@endif
+
+
+@yield('js_after')
 </html>

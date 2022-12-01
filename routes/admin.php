@@ -129,6 +129,33 @@ Route::group(
                 ])->name('user.destroy');
             }
         );
+
+        Route::group(
+            [
+                'prefix' => 'job-types',
+            ],
+            function () {
+                Route::get('/', [
+                    'uses' => 'JobTypeController@index'
+                ])->name('job.type.index');
+
+                Route::get('/{id}', [
+                    'uses' => 'JobTypeController@show'
+                ])->name('job.type.show');
+
+                Route::post('/store', [
+                    'uses' => 'JobTypeController@store'
+                ])->name('job.type.store');
+
+                Route::post('/status', [
+                    'uses' => 'JobTypeController@updateStatus'
+                ])->name('job.type.update.status');
+
+                Route::delete('/delete/{id}', [
+                    'uses' => 'JobTypeController@destroy'
+                ])->name('job.type.destroy');
+            }
+        );
     }
 );
 

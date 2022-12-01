@@ -73,6 +73,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function partner()
     {
         return $this->belongsTo(Partner::class, 'partner_id', 'id')
-            ->select('name');
+            ->select('name', 'id');
     }
 }
