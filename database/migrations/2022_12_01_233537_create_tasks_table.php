@@ -26,7 +26,7 @@ class CreateTasksTable extends Migration
             $table->enum('prefix', ['MR','MS','MRS'])->default('MR');
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-            $table->string('qr_code')->nullable();
+            $table->longText('qr_code')->nullable();
             $table->smallInteger('is_active')->default(1)->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
