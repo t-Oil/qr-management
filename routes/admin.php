@@ -156,6 +156,17 @@ Route::group(
                 ])->name('job.type.destroy');
             }
         );
+
+        Route::group(
+            [
+                'prefix' => 'tasks'
+            ],
+            function() {
+                Route::get('/', [
+                    'uses' => 'TaskController@index'
+                ])->name('task.index');
+            }
+        );
     }
 );
 

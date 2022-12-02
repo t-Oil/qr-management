@@ -249,6 +249,11 @@ return [
             'url'  => 'admin/users',
             'icon' => 'fas fa-user'
         ],
+        [
+            'text' => 'ข้อมูลลงทะเบียน Qr Code',
+            'url'  => 'admin/tasks',
+            'icon' => 'fas fa-list-alt'
+        ],
     ],
 
     /*

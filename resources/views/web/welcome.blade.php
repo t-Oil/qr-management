@@ -63,7 +63,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ประเภทชั่ง<span class="text-danger">*</span></label>
-                                        <select class="form-control @error('job_type') is-invalid @enderror" name="job_type">
+                                        <select class="form-control @error('job_type') is-invalid @enderror"
+                                                name="job_type">
                                             <option value="">เลือกประเภทชั่ง</option>
                                             @foreach($jobTypes as $jobType)
                                                 <option
@@ -93,10 +94,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>สินค้า<span class="text-danger">*</span></label>
-                                        <select class="form-control @error('product') is-invalid @enderror" name="product">
+                                        <select class="form-control @error('product') is-invalid @enderror"
+                                                name="product">
                                             <option value="">เลือกสินค้า</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" {{old('product') == $product->id ? 'selected': ''}}>{{ $product->code }}
+                                                <option
+                                                    value="{{ $product->id }}" {{old('product') == $product->id ? 'selected': ''}}>{{ $product->code }}
                                                     - {{ $product->name }}</option>
                                             @endforeach
                                         </select>
@@ -111,10 +114,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>แผนก<span class="text-danger">*</span></label>
-                                        <select class="form-control @error('department') is-invalid @enderror" name="department">
+                                        <select class="form-control @error('department') is-invalid @enderror"
+                                                name="department">
                                             <option value="">เลือกแผนก</option>
                                             @foreach($departments as $department)
-                                                <option value="{{ $department->id }}" {{old('department') == $department->id ? 'selected': ''}}>{{ $department->code }}
+                                                <option
+                                                    value="{{ $department->id }}" {{old('department') == $department->id ? 'selected': ''}}>{{ $department->code }}
                                                     - {{ $department->name }}</option>
                                             @endforeach
                                         </select>
@@ -185,23 +190,26 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col text-center">
-                                    <button type="submit" class="btn btn-primary">สร้าง QR Code</button>
+                            @if( !Session::has( 'qr' ))
+                                <div class="row">
+                                    <div class="col text-center">
+                                        <button type="submit" class="btn btn-primary">สร้าง QR Code</button>
+                                    </div>
                                 </div>
-                            </div>
-                            {{ csrf_field() }}
+                                {{ csrf_field() }}
+                            @endif
                         </form>
                     </div>
 
                     @if( Session::has( 'qr' ))
                         <div class="col-md-12 py-2">
                             <div class="d-flex justify-content-center">
-                                <img src="{{asset(Session::get( 'qr' ))}}">
+                                <img src="{{Session::get( 'qr' )}}">
                             </div>
                             <div class="d-flex justify-content-around pt-2">
-                                <button class="btn btn-primary">พิมพ์</button>
-                                <button class="btn btn-dark">PDF</button>
+                                <button class="btn btn-primary export" data-id="{{Session::get( 'id' )}}" data-type="preview">พิมพ์</button>
+                                <button class="btn btn-dark export" data-id="{{Session::get( 'id' )}}" data-type="download">PDF</button>
+                                <a href="{{ route('web.index') }}" class="btn btn-danger">ล้างค่า</a>
                             </div>
                         </div>
                     @endif
@@ -213,32 +221,20 @@
 
 @section('js_after')
     <script>
-        window.jsPDF = window.jspdf.jsPDF;
-
-        // Convert HTML content to PDF
-        function Convert_HTML_To_PDF() {
-            var doc = new jsPDF();
-
-            // Source HTMLElement or a string containing HTML.
-            var elementHTML = document.querySelector("#task-box");
-        console.log(elementHTML)
-            doc.html(elementHTML, {
-                callback: function(doc) {
-                    // Save the PDF
-                    doc.save('document-html.pdf');
-                },
-                margin: [10, 10, 10, 10],
-                autoPaging: 'text',
-                x: 0,
-                y: 0,
-                width: 190, //target width in the PDF document
-                windowWidth: 675 //window width in CSS pixels
-            });
-        }
-
         $('#task_date').datetimepicker({
             format: 'DD/MM/yyyy',
             defaultDate: new Date()
         });
+
+        $('.export').click(function () {
+            const params = [{
+                name: "type",
+                value: $(this).attr('data-type')
+            }]
+
+            const url = `/task/${$(this).attr('data-id')}/export?${$.param(params)}`;
+            window.open(url);
+        })
+
     </script>
 @endsection

@@ -27,21 +27,29 @@ Route::group(
             'uses' => 'HomeController@index'
         ])->name('web.index');
 
-        Route::get('/task', [
-            'uses' => 'TaskController@index'
-        ])->name('task.index');
-
         Route::post('/task/store', [
             'uses' => 'TaskController@store'
         ])->name('task.store');
+
+        Route::get('/task/{id}/export', [
+            'uses' => 'TaskController@export'
+        ])->name('task.export');
     }
 );
 
-Route::get('/logout', [
-    'App\Http\Controllers\Auth\LogoutController', 'logout'
-])->name('auth.logout');
+Route::group(
+    [
+        'namespace' => 'App\Http\Controllers\Auth',
+    ],
+    function () {
+        Route::get('/logout', [
+            'LogoutController@logout'
+        ])->name('auth.logout');
 
-Route::get('/register', [
-    'App\Http\Controllers\Auth\RegisterController', 'register'
-])->name('auth.register');
+        Route::get('/register', [
+            'RegisterController@register'
+        ])->name('auth.register');
+    }
+);
+
 

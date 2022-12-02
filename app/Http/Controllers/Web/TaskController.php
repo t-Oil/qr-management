@@ -15,13 +15,10 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TaskController extends Controller
 {
-    public function index()
-    {
-        $task = Task::query()->find(1);
-
-        return QrCode::size(300)->generate($this->generateQrCode($task));
-    }
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $parameters = $request->all();
@@ -56,7 +53,7 @@ class TaskController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('qr', $task->qr_code)->withInput();
+            return redirect()->back()->with(['qr' => $task->qr_code, 'id' => $task->id ])->withInput();
 
         } catch (Exception $e) {
             session()->flash('error', $e->getMessage());
@@ -66,6 +63,10 @@ class TaskController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
     private function validator(Request $request)
     {
         $rules = [
@@ -93,6 +94,10 @@ class TaskController extends Controller
         return Validator::make($request->all(), $rules, $customMessages);
     }
 
+    /**
+     * @param Task $task
+     * @return mixed
+     */
     private function generateQrCode(Task $task)
     {
         $payload = [
@@ -107,10 +112,29 @@ class TaskController extends Controller
             Arr::get($task, 'last_name'),
         ];
 
-        $fileName = md5(time() . rand(1000, 9999));
+        $encode = base64_encode(implode(' ', $payload));
 
-        QrCode::format('png')->size(400)->generate(base64_encode(implode(' ', $payload)), public_path('assets/qr/'.$fileName.'.png'));
+        return (new \chillerlan\QRCode\QRCode)->render($encode);
+    }
 
-        return 'assets/qr/'.$fileName.'.png';
+    public function export($id, Request $request)
+    {
+        $parameters = $request->all();
+
+        $task = Task::query()->find($id);
+        $type = Arr::get($parameters, 'type', 'preview');
+
+        $pdf = \PDF::loadView(
+            'web.export.task',
+            ['item' => $task]
+        )->setPaper('a4');
+
+        $fileName = Carbon::now()->getTimestampMs() . '-' . $task->vehicle_registration . '.pdf';
+
+        if ($type == 'preview') {
+            return $pdf->stream($fileName);
+        }
+
+        return $pdf->download($fileName);
     }
 }

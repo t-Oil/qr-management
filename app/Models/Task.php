@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\DriverPrefix;
 use App\Traits\CreatedUpdatedBy;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -66,5 +68,21 @@ class Task extends Model
     {
         return $this->belongsTo(Department::class, 'department_id', 'id')
             ->select('name', 'code');
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName()
+    {
+        return DriverPrefix::asArray()[$this->prefix] . ' ' . $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function taskDate()
+    {
+        return Carbon::createFromFormat('Y-m-d', $this->task_date)->format('d/m/Y');
     }
 }
