@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\ClearHistoryTask;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -54,14 +55,15 @@ class LoginController extends Controller
         if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
         {
             if (auth()->user()->is_admin == 1) {
-                return redirect()->route('admin.user.index');
+                event(new ClearHistoryTask());
+                return redirect()->route('admin.task.index');
             }
 
             return redirect()->route('web.index');
         }
 
         return redirect()->back()
-            ->with('error','ชื่อผู้ใช้งานหรือรหัสผ่านผิดพลาด');
+            ->with('error','ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง');
 
     }
 }

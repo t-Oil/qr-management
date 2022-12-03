@@ -122,5 +122,5 @@
 }
 
 .bg-dark-primary {
-    background-color: var(--dark);
+    background-color: var(--dark) !important;
 }

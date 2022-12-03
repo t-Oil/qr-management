@@ -43,12 +43,18 @@ Route::group(
     ],
     function () {
         Route::get('/logout', [
-            'LogoutController@logout'
+            'uses' => 'LogoutController@logout'
         ])->name('auth.logout');
 
         Route::get('/register', [
-            'RegisterController@register'
+            'uses' => 'RegisterController@register'
         ])->name('auth.register');
+
+        Route::view('/change-password', 'auth.change-password')->middleware('auth')->name('auth.change.password.show');
+
+        Route::post('/change-password/update', [
+            'uses' => 'ChangePasswordController@update'
+        ])->name('auth.change.password.update');
     }
 );
 

@@ -56,6 +56,12 @@
             @endif
         </div>
 
+        @if(Session::has( 'error' ))
+            <div class="invalid-feedback d-block pb-2">
+                <strong>{{ Session::get( 'error' ) }}</strong>
+            </div>
+        @endif
+
         {{-- Login field --}}
         <div class="row">
             <div class="col-7">

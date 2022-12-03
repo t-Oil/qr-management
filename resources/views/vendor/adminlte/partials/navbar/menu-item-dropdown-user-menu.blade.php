@@ -68,6 +68,9 @@
                     {{ __('adminlte::menu.profile') }}
                 </a>
             @endif
+            <a class="btn btn-default btn-flat float-right  @if(!$profile_url) btn-block @endif" href="{{ route('auth.change.password.show') }}">
+                เปลี่ยนรหัสผ่าน
+            </a>
             <a class="btn btn-default btn-flat float-right @if(!$profile_url) btn-block @endif"
                href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa fa-fw fa-power-off"></i>
