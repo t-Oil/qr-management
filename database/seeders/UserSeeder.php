@@ -20,7 +20,8 @@ class UserSeeder extends Seeder
             'email'     =>  'admin@admin.com',
             'password'  =>  bcrypt('Admin'),
             'email_verified_at' => Carbon::now(),
-            'is_admin' => 1
+            'is_admin' => 1,
+            'partner_id' => 1,
         ]);
 
         User::create([
@@ -28,7 +29,8 @@ class UserSeeder extends Seeder
             'email'     =>  'user@user.com',
             'password'  =>  bcrypt('User'),
             'email_verified_at' => Carbon::now(),
-            'is_admin' => 0
+            'is_admin' => 0,
+            'partner_id' => 1,
         ]);
 
     }

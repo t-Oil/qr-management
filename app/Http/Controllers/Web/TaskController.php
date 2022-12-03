@@ -77,7 +77,7 @@ class TaskController extends Controller
             'department' => 'required',
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
-//            'id_card' => new ThaiIdCardRule
+            'id_card' => new ThaiIdCardRule
         ];
 
         $customMessages = [
