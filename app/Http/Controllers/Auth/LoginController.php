@@ -54,8 +54,9 @@ class LoginController extends Controller
 
         if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
         {
+            event(new ClearHistoryTask());
+
             if (auth()->user()->is_admin == 1) {
-                event(new ClearHistoryTask());
                 return redirect()->route('admin.task.index');
             }
 

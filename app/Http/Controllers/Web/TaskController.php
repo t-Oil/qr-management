@@ -112,7 +112,7 @@ class TaskController extends Controller
             Arr::get($task, 'last_name'),
         ];
 
-        $encode = base64_encode(implode(' ', $payload));
+        $encode = base64_encode(implode(chr(9), $payload));
 
         return (new \chillerlan\QRCode\QRCode)->render($encode);
     }
