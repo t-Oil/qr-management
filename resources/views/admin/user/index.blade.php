@@ -38,10 +38,11 @@
                         <table class="table table-head-fixed text-nowrap">
                             <thead>
                             <tr>
-                                <th>ลำดับ</th>
+                                <th class="col-1">ลำดับ</th>
                                 <th>ชื่อผู้ใช้งาน</th>
                                 <th>คู่ค้า</th>
-                                <th>สถานะ</th>
+                                <th>ประเภทผู้ใช้งาน</th>
+                                <th class="col-1">สถานะ</th>
                                 <th class="text-center">จัดการ</th>
                             </tr>
                             </thead>
@@ -52,6 +53,7 @@
                                     <td>{{ $items->pages->start+$index + 1 }}</td>
                                     <td>{{ $item->username }}</td>
                                     <td>{{ optional($item->partner)->name }}</td>
+                                    <td>{{ $item->userType() }}</td>
                                     <td>
                                         <label class="switch switch-green">
                                             <input

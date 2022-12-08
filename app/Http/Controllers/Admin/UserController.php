@@ -58,6 +58,8 @@ class UserController extends Controller
             $query = $query->where('username', 'LIKE', '%' . $search . '%');
         }
 
+        $query = $query->orderBy('is_admin', 'DESC');
+
         return $query->paginate($paginate);
     }
 

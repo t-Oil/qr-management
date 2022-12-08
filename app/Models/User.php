@@ -77,4 +77,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->belongsTo(Partner::class, 'partner_id', 'id')
             ->select('name', 'id');
     }
+
+    public function userType()
+    {
+        if ($this->is_admin == 1) {
+            return 'ผู้ดูแลระบบ';
+        }
+
+        return 'ผู้ใช้งานทั่วไป';
+    }
 }
