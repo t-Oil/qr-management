@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function show(int $id)
     {
-        $data = User::query()->select(['username', 'partner_id'])->find($id);
+        $data = User::query()->select(['username', 'partner_id', 'is_admin'])->find($id);
 
         return response()->json(array(
             'data' => $data,
@@ -142,20 +142,23 @@ class UserController extends Controller
         $validator = Validator::make($parameters, [
             'username' => 'required|unique:users,username,' . $id,
             'password' => [
-                'required',
+                'required_if:action,==,create',
                 'confirmed',
                 'min:6'
             ],
-            'password_confirmation' => 'required',
-            'partner' => 'required'
+            'password_confirmation' => 'required_if:action,==,create',
+            'partner' => 'required',
+            'user_type' => 'required',
+            'action' => 'required'
         ], [
-            'password.required' => 'รหัสผ่านไม่ควรเป็นค่าว่าง',
+            'password.required_if' => 'รหัสผ่านไม่ควรเป็นค่าว่าง',
             'password.confirmed' => 'รหัสผ่านและยืนยันรหัสผ่านต้องตรงกัน',
             'password.min' => 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
-            'password_confirmation.required' => 'ยืนยันรหัสผ่านไม่ควรเป็นค่าว่าง',
+            'password_confirmation.required_if' => 'ยืนยันรหัสผ่านไม่ควรเป็นค่าว่าง',
             'partner.required' => 'คู่ค้าไม่ควรเป็นค่าว่าง',
             'username.required' => 'ชื่อผู้ใช้งานไม่ควรเป็นค่าว่าง',
             'username.unique' => 'ชื่อผู้ใช้งานซ้ำ',
+            'user_type.required' => 'ประเภทผู้ใช้งานไม่ควรเป็นค่าว่าง',
         ]);
 
         if ($validator->fails()) {
@@ -174,6 +177,8 @@ class UserController extends Controller
                     'message' => 'ไม่พบข้อมูล'
                 ), 404);
             }
+
+            Arr::set($parameters, 'username', $data->username);
         }
 
         try {
@@ -182,12 +187,18 @@ class UserController extends Controller
             $data = [
                 'email' => Arr::get($parameters, 'username'),
                 'username' => Arr::get($parameters, 'username'),
-                'password' => Hash::make(Arr::get($parameters, 'password')),
                 'partner_id' => Arr::get($parameters, 'partner'),
+                'is_admin' => Arr::get($parameters, 'user_type'),
                 'email_verified_at' => Carbon::now()
             ];
 
-            User::create($data);
+            if (!empty(Arr::get($parameters, 'password'))){
+                $data['password'] = Hash::make(Arr::get($parameters, 'password'));
+            }
+
+            User::updateOrCreate([
+                'id' => $id
+            ], $data);
 
             DB::commit();
         } catch (\Throwable $e) {

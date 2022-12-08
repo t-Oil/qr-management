@@ -75,6 +75,15 @@
                                             <button
                                                 data-id="{{ $item->id }}"
                                                 type="button"
+                                                class="btn btn-primary edit"
+                                                data-bs-toggle="tooltip"
+                                                title="แก้ไข"
+                                            >
+                                                <i class="fa fa-fw fa-pencil-alt"></i>
+                                            </button>
+                                            <button
+                                                data-id="{{ $item->id }}"
+                                                type="button"
                                                 class="btn btn-warning text-white remove"
                                                 data-bs-toggle="tooltip"
                                                 title="ลบ"
@@ -108,6 +117,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         <input type="hidden" id="id">
+                        <input type="hidden" id="action">
                     </button>
                 </div>
                 <div class="modal-body">
@@ -136,10 +146,18 @@
                         </select>
                         <span class="invalid-feedback" id="err-partner"></span>
                     </div>
+                    <div class="form-group">
+                        <label for="user_type">ประเภทผู้ใช้งาน</label>
+                        <select class="form-control" id="user_type">
+                            <option value="0">ผู้ใช้งานทั่วไป</option>
+                            <option value="1">ผู้ดูแลระบบ</option>
+                        </select>
+                        <span class="invalid-feedback" id="err-user-type"></span>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-primary" id="submit">บันทึก</button>
+                    <button type="button" class="btn btn-default col-3 col-md-2" data-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-primary col-3 col-md-2" id="submit">บันทึก</button>
                 </div>
             </div>
         </div>
@@ -174,25 +192,35 @@
 
             $('.create').click(function () {
                 $('.modal-title').html('เพิ่ม')
-                $('#code').val('')
-                $('#name').val('')
+                $('#username').val('').prop('disabled', false)
+                $('#partner').val('').change()
+                $('#user_type').val(0).change()
                 $('#id').val('')
+                $('#password').val('')
+                $('#password_confirmation').val('')
+                $('#action').val('create')
                 $('#modal-default').modal('show')
+                $('.invalid-feedback').removeClass('d-block').addClass('d-none')
             });
 
             $('.edit').click(function () {
                 const id = $(this).attr('data-id');
+                $('.invalid-feedback').removeClass('d-block').addClass('d-none')
 
                 $.ajax({
                     url: '{{$data->preFixUrl}}/' + id,
                     context: this,
                     success: function (res) {
-                        const { code, name} = res.data
+                        const { username, partner_id, is_admin } = res.data
 
                         $('.modal-title').html('แก้ไข')
-                        $('#code').val(code)
-                        $('#name').val(name)
+                        $('#partner').val(partner_id).change()
+                        $('#user_type').val(is_admin).change()
+                        $('#username').val(username).prop('disabled', true)
+                        $('#password').val('')
+                        $('#password_confirmation').val('')
                         $('#id').val(id)
+                        $('#action').val('edit')
                         $('#modal-default').modal('show')
                     },
                     error: function (xhr, err) {
@@ -208,9 +236,16 @@
                 const payload = {
                     id: $('#id').val(),
                     username: $('#username').val(),
-                    password: $('#password').val(),
-                    password_confirmation: $('#password_confirmation').val(),
-                    partner: $('#partner').val()
+                    partner: $('#partner').val(),
+                    action: $('#action').val(),
+                    user_type: $('#user_type').val()
+                }
+
+                if ($('#password').val() != '' || $('#password_confirmation').val() != '') {
+                    Object.assign(payload, {
+                        password: $('#password').val(),
+                        password_confirmation: $('#password_confirmation').val(),
+                    })
                 }
 
                 $.ajax({
@@ -249,7 +284,7 @@
                         handleToast('success', 'สำเร็จ')
                     },
                     error: function (xhr, err) {
-                        // handleToast()
+                        handleToast()
                     }
                 });
             })

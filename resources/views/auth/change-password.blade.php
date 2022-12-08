@@ -57,8 +57,8 @@
 
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ route('web.index') }}" class="btn btn-secondary">กลับ</a>
-                                    <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                                    <a href="{{ route('web.index') }}" class="btn btn-secondary col-3 col-md-2">กลับ</a>
+                                    <button type="submit" class="btn btn-primary col-3 col-md-2">ยืนยัน</button>
                                 </div>
                             </div>
                             {{ csrf_field() }}

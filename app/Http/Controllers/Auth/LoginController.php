@@ -52,7 +52,7 @@ class LoginController extends Controller
             'password.required' => 'รหัสผ่านต้องไม่เป็นค่าว่าง'
         ]);
 
-        if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
+        if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'], 'is_active' => 1)))
         {
             event(new ClearHistoryTask());
 

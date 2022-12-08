@@ -132,8 +132,8 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-primary" id="submit">บันทึก</button>
+                    <button type="button" class="btn btn-default col-3 col-md-2" data-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-primary col-3 col-md-2" id="submit">บันทึก</button>
                 </div>
             </div>
         </div>
