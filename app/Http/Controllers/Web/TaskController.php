@@ -110,6 +110,7 @@ class TaskController extends Controller
             DriverPrefix::asArray()[Arr::get($task, 'prefix')],
             Arr::get($task, 'first_name'),
             Arr::get($task, 'last_name'),
+            optional($task)->jobType->code,
         ];
 
         $encode = base64_encode(implode(chr(9), $payload));

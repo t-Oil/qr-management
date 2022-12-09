@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => false]);
 
 Route::group(
     [
