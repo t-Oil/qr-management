@@ -1,30 +1,26 @@
-# Laravel 8
+# QR-Management
 
-```
-composer install
-```
-```
-npm install
-```
+## Project Required
+```PHP Version 7.4```
 
-```
-cp .env.example .env
-```
+## Installing Project
+```composer install```
 
-```
-php artisan key:generate
-```
+```cp .env.example .env```
 
-```
-php artisan migrate
-```
+```config connection database in .env```
 
-```
-php artisan db:seed
-```
+```php artisan key:generate```
 
-```
-php artisan serve
-```
+```php artisan migrate```
 
-User Admin root@root.com - Root
+```php artisan db:seed```
+
+## Running Project in Local
+
+```php artisan serve```
+
+## Permissions
+```u: admin p: qwerASDF```
+
+```u: user p:qwerASDF```
